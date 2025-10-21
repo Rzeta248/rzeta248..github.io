@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tec. Sup. Análisis de Sistemas y Desarrollo de Software - IES Dr. Alfredo Loutaif</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    .seccion img{ width: 500px;display: block;margin:auto}
+    .galeria img{ width:300px;}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="imagenes/images (1).jpeg" alt="Logo Instituto Dr. Alfredo Loutaif">
+      <div>
+        <h1>Tec. Sup. en Análisis de Sistemas y Desarrollo de Software</h1>
+        <p>Instituto Dr. Alfredo Loutaif — Orán, Salta</p>
+        <p>Encuentro Provincial de Practicas y Residencias Educativas</p>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="index.html">Sobre</a>
+      <a href="index.html">Propuesta Educativa</a>
+      <a href="proyectos.html">Proyectos</a>
+      <a href="plan_de_estudio.html">Plan</a>
+    </nav>
+  </header>
+
+  <section id="inicio" class="seccion">
+    <h2 style="text-align: center;">Proyecto: Brazo Robótico</h2>
+    <p>
+      Este proyecto utiliza una placa <strong>Arduino UNO</strong> junto con varios servomotores para mover un brazo robótico impreso en 3D.
+      El control se realiza mediante <strong>dos joysticks analógicos</strong>, lo que permite manipular la base, el hombro, el codo y la pinza.
+    </p>
+    <img src="imagenes/brazo.jpg" alt="Brazo Robótico" class="principal">
+  </section>
+
+  <section id="componentes" class="seccion">
+    <h2>Componentes Utilizados</h2>
+    <ul>
+      <li><strong>Sensor shield</strong> sirve para facilitar la conexión de diferentes sensores y módulos a una 
+        placa Arduino, extendiendo y simplificando la interfaz de hardware.</li>
+      <img src="imagenes/sensor.jpg" alt="sensor shield" class="tamaño">
+
+      <li><strong>Arduino Uno:</strong> Microcontrolador principal que coordina los servos.</li>
+      <img src="imagenes/arduino2.png" alt="Arduino UNO" class="tamaño">
+
+
+      <li><strong>Servomotores SG90:</strong> Motores de precisión que controlan cada articulación del brazo.</li>
+      <img src="imagenes/servo.jpg" alt="Servomotor SG90" class="tamaño">
+
+      <li><strong>Joystick Módulo XY:</strong> Permite mover el brazo en diferentes direcciones.</li>
+      <img src="imagenes/joystick.webp" alt="Joystick Módulo XY" class="tamaño">
+
+      
+    </ul>
+  </section>
+
+  <section id="galeria" class="seccion">
+    <h2>Galería del Proyecto</h2>
+    <div class="galeria">
+      <img src="imagenes/brazo.jpg" alt="Brazo robótico armado" style="display: block; margin: auto;"> <br>
+      <img src="imagenes/esquema_brazo.jpg" alt="Esquema del Brazo Robótico" style="display: block; margin: auto;"> <br>
+      <img src="imagenes/robot2.jpg" alt="Joystick módulo" style="display: block; margin: auto;"> <br>
+      <img src="imagenes/robot3.jpg" alt="" style="display: block; margin: auto;"> <br>
+      <img src="imagenes/robot.jpg" alt="" style="display: block; margin: auto;"> <br>
+      <video controls>
+        <source src="brazo-video.mp4" type="video/mp4">
+        Tu navegador no soporta la reproducción de videos.
+      </video>
+    </div>
+  </section>
+
+  <section id="codigo" class="seccion">
+    <h2>Código Arduino</h2>
+    <p>A continuación se muestra el código utilizado para controlar el brazo robótico mediante los joysticks:</p>
+    <pre>
+#include <Servo.h>
+
+// Servos
+Servo baseServo;
+Servo hombroServo;
+Servo codoServo;
+Servo pinzaServo;
+
+// Pines de servos (ajustá según tu shield)
+const int basePin   = 6;
+const int hombroPin = 7;
+const int codoPin   = 8;
+const int pinzaPin  = 9;
+
+// Joysticks (ejes analógicos)
+const int joy1X = A5; // base
+const int joy1Y = A4; // hombro
+const int joy2X = A2; // codo
+const int joy2Y = A3; // pinza
+
+// Posiciones actuales (ángulos)
+int basePos   = 90;
+int hombroPos = 90;
+int codoPos   = 90;
+int pinzaPos  = 90;
+
+// Parámetros de control
+const int DEADZONE = 60;      // rango central que se considera "sin movimiento" (ajustar si hay drift)
+const int SENSIBILIDAD = 1;   // cuánto cambia la posición por paso (1 = muy suave). Subir para más rápido.
+const unsigned long UPDATE_MS = 25; // cada cuántos ms actualizamos la posición
+
+unsigned long lastUpdate = 0;
+
+void setup() {
+  Serial.begin(9600);
+
+  baseServo.attach(basePin);
+  hombroServo.attach(hombroPin);
+  codoServo.attach(codoPin);
+  pinzaServo.attach(pinzaPin);
+
+  // Posición inicial (centro)
+  baseServo.write(basePos);
+  hombroServo.write(hombroPos);
+  codoServo.write(codoPos);
+  pinzaServo.write(pinzaPos);
+}
+
+void loop() {
+  unsigned long now = millis();
+  if (now - lastUpdate < UPDATE_MS) return; // limitador de tasa
+  lastUpdate = now;
+
+  // Lecturas de los joysticks (0..1023)
+  int j1x = analogRead(joy1X);
+  int j1y = analogRead(joy1Y);
+  int j2x = analogRead(joy2X);
+  int j2y = analogRead(joy2Y);
+
+  // Centro esperado ~512; calculo desplazamiento respecto a centro
+  int dx1 = j1x - 512;
+  int dy1 = j1y - 512;
+  int dx2 = j2x - 512;
+  int dy2 = j2y - 512;
+
+  // Control incremental: si la desviación supera DEADZONE, cambiamos la posición
+  if (abs(dx1) > DEADZONE) {
+    if (dx1 > 0) basePos += SENSIBILIDAD;  // joystick a la derecha -> aumentar ángulo
+    else          basePos -= SENSIBILIDAD; // a la izquierda -> disminuir ángulo
+  }
+
+  if (abs(dy1) > DEADZONE) {
+    if (dy1 > 0) hombroPos -= SENSIBILIDAD; // nota: invertido según tu montaje (ajustar si querés)
+    else         hombroPos += SENSIBILIDAD;
+  }
+
+  if (abs(dx2) > DEADZONE) {
+    if (dx2 > 0) codoPos += SENSIBILIDAD;
+    else         codoPos -= SENSIBILIDAD;
+  }
+
+  if (abs(dy2) > DEADZONE) {
+    if (dy2 > 0) pinzaPos -= SENSIBILIDAD; // para pinza puede convenir invertir o mapear a cierre/abre
+    else         pinzaPos += SENSIBILIDAD;
+  }
+
+  // Limitar rangos (evita mandar ángulos fuera de 0..180)
+  basePos   = constrain(basePos,   0, 180);
+  hombroPos = constrain(hombroPos, 0, 180);
+  codoPos   = constrain(codoPos,   0, 180);
+  pinzaPos  = constrain(pinzaPos,  10, 170); // la pinza no suele usar 0..180 completo
+
+  // Escribir en servos
+  baseServo.write(basePos);
+  hombroServo.write(hombroPos);
+  codoServo.write(codoPos);
+  pinzaServo.write(pinzaPos);
+
+  // Debug opcional
+  Serial.print("B:"); Serial.print(basePos);
+  Serial.print(" H:"); Serial.print(hombroPos);
+  Serial.print(" C:"); Serial.print(codoPos);
+  Serial.print(" P:"); Serial.println(pinzaPos);
+}
+    </pre>
+  </section>
+   <footer>
+    <p>Instituto Dr. Alfredo Loutaif — Tec. Sup. Análisis de Sistemas y Desarrollo de Software • Encuentro Provincial de Practicas y Residencias Educativas 2025</p>
+  </footer>
+
+</body>
+</html>

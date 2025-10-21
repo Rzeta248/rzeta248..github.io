@@ -1,0 +1,406 @@
+ <!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tec. Sup. Análisis de Sistemas y Desarrollo de Software - IES Dr. Alfredo Loutaif</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+  <style>
+   /* ======== SECCIONES ======== */
+.seccion {
+  padding: 40px 20px;
+  max-width: 900px;
+  margin: auto;
+  opacity: 0;
+  transform: translateY(40px);
+  animation: aparecer 1s forwards;
+
+
+}
+/* ======== IMÁGENES DE COMPONENTES ======== */
+.tamaño {
+  width: 200px;            /* 🔹 Ancho uniforme para todas las imágenes */
+  height: 150px;           /* 🔹 Alto fijo */
+  object-fit: cover;       /* 🔹 Recorta sin deformar */
+  border-radius: 10px;     /* 🔹 Bordes redondeados */
+  display: block;
+  margin: 10px auto;       /* 🔹 Centra las imágenes */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.tamaño:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+
+/* ======== ANIMACIÓN DE APARICIÓN ======== */
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+h2 {
+  color: #004aad;
+  border-bottom: 2px solid #004aad;
+  display: inline-block;
+  margin-bottom: 15px;
+}
+
+/* ======== IMÁGENES ======== */
+img {
+  max-width: 100%;
+  display: block;
+  margin: 15px auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transition: transform 0.4s, box-shadow 0.4s;
+}
+
+img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* ======== GALERÍA ======== */
+.galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.galeria img {
+  width: 100%;
+  height: 180px;            /* 🔹 Altura uniforme para todas las imágenes */
+  object-fit: cover;        /* 🔹 Recorta sin deformar */
+  border-radius: 10px;
+  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.galeria img:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* ======== VIDEOS EN GALERÍA ======== */
+.galeria video,
+.galeria iframe {
+  width: 100%;
+  height: 180px;         /* mismo alto que las imágenes */
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.galeria video:hover,
+.galeria iframe:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+} 
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="imagenes/images (1).jpeg" alt="Logo Instituto Dr. Alfredo Loutaif">
+      <div>
+        <h1>Tec. Sup. en Análisis de Sistemas y Desarrollo de Software</h1>
+        <p>Instituto Dr. Alfredo Loutaif — Orán, Salta</p>
+        <p>Encuentro Provincial de Practicas y Residencias Educativas</p>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="index.html">Sobre</a>
+      <a href="index.html">Propuesta Educativa</a>
+      <a href="proyectos.html">Proyectos</a>
+      <a href="plan_de_estudio.html">Plan</a>
+    </nav>
+  </header>
+  <div>
+    <section id="inicio" class="seccion">
+    <h2>Bienvenido al Proyecto</h2>
+    <p>
+      Este auto fue desarrollado con una placa Arduino UNO y se controla mediante Bluetooth.
+      Su estructura permite moverse hacia diferentes direcciones utilizando motores DC y un
+      módulo L298N para el control de potencia. Es un excelente ejemplo de robótica básica
+      y comunicación inalámbrica.
+    </p>
+    <img src="imagenes/auto.jpeg" alt="Auto controlado por Bluetooth" width="400px">
+  </section>
+
+  <section id="componentes" class="seccion">
+    <h2>Componentes Utilizados</h2>
+    <ul>
+      <li><strong>Arduino UNO:</strong> Microcontrolador principal que gestiona el sistema.</li><br>
+      <img src="imagenes/arduino.png" alt="Placa Arduino UNO" class="tamaño">
+      <li><strong>Módulo Bluetooth HC-05:</strong> Permite la comunicación inalámbrica desde el celular.</li><br>
+      <img src="imagenes/hc05.jpeg" alt="Bluetooth" class="tamaño">
+      <li><strong>Driver L298N:</strong> Controla la dirección y velocidad de los motores.</li>
+      <img src="imagenes/L298n.jpg" alt="" class="tamaño">
+      <li><strong>Motores DC:</strong> Proporcionan el movimiento del auto.</li>
+      <img src="imagenes/rueda.jpg" alt="" class="tamaño">
+      <li><strong>Batería 9V:</strong> Fuente de alimentación del circuito.</li>
+      <img src="imagenes/bateria.png" alt="" class="tamaño">
+      <li><strong>LED:</strong> Indica el encendido o las luces delanteras del auto.</li>
+      <img src="imagenes/led.jpg" alt="" class="tamaño">
+    </ul>
+  </section> 
+
+  <section id="funcionamiento" class="seccion">
+    <h2>Cómo Funciona</h2>
+    <p>
+      El auto recibe comandos desde una aplicación móvil a través del módulo Bluetooth HC-05.
+      El Arduino interpreta esas señales y activa el controlador L298N, que alimenta los motores
+      para moverse hacia adelante, atrás, izquierda o derecha.  
+      Además, incluye un LED frontal que simula una luz principal.
+    </p>
+  </section>
+
+  <!-- Nueva sección: Código del Proyecto -->
+  <section id="codigo" class="seccion">
+    <h2>Código del Proyecto Arduino</h2>
+    <p>
+      Este es el código utilizado en el Arduino UNO para controlar los motores y el LED a través
+      del módulo Bluetooth HC-05:
+    </p>
+    </section>
+  </div>
+
+    <pre>
+// Control de Auto Bluetooth con Arduino UNO
+
+// Pines para el driver L298N
+#define ENA 5   // Pin PWM para la velocidad del motor A
+#define ENB 6   // Pin PWM para la velocidad del motor B
+#define IN1 7   // Control dirección motor A
+#define IN2 8   // Control dirección motor A
+#define IN3 9   // Control dirección motor B
+#define IN4 3   // Control dirección motor B
+
+// LEDs y bocina
+#define LEDFA 12
+#define LEDUP 13
+#define LEDB 2
+#define HORN 4
+
+
+
+// Bluetooth
+#define BT_RX 10
+#define BT_TX 11
+
+SoftwareSerial BT(BT_RX, BT_TX);
+
+int command;
+int Speed = 204; // 0-255
+
+void setup() {
+  pinMode(ENA, OUTPUT);
+  pinMode(ENB, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+  pinMode(LEDFA, OUTPUT);
+  pinMode(LEDB, OUTPUT);
+  pinMode(HORN, OUTPUT);
+  
+  pinMode(LEDUP, OUTPUT);
+
+  Serial.begin(9600);
+  BT.begin(9600);
+  Serial.println("Sistema iniciado...");
+
+  Stop();
+  frontledoff();
+  backledoff();
+  hornoff();
+  
+}
+
+void loop() {
+  prenderled();
+  
+
+  if (BT.available() > 0) {
+    command = BT.read();
+    Serial.print("Comando: ");
+    Serial.println(char(command));
+    handleCommand(command);
+  }
+
+  if (Serial.available() > 0) {
+    command = Serial.read();
+    Serial.print("Comando Serial: ");
+    Serial.println(char(command));
+    handleCommand(command);
+  }
+}
+
+void handleCommand(int cmd) {
+  switch (cmd) {
+    case 'F': forward(); break;
+    case 'B': back(); break;
+    case 'L': left(); break;
+    case 'R': right(); break;
+    case 'G': forwardleft(); break;
+    case 'I': forwardright(); break;
+    case 'H': backleft(); break;
+    case 'J': backright(); break;
+    case 'S': Stop(); break;
+    case 'W': frontledon(); break;
+    case 'w': frontledoff(); break;
+    case 'U': backledon(); break;
+    case 'u': backledoff(); break;
+    case 'V': hornon(); break;
+    case 'v': hornoff(); break;
+    case '0': Speed = 100; break;
+    case '1': Speed = 140; break;
+    case '2': Speed = 153; break;
+    case '3': Speed = 165; break;
+    case '4': Speed = 178; break;
+    case '5': Speed = 191; break;
+    case '6': Speed = 204; break;
+    case '7': Speed = 216; break;
+    case '8': Speed = 229; break;
+    case '9': Speed = 242; break;
+    case 'q': Speed = 255; break;
+    default: Stop(); break;
+  }
+}
+
+void setMotorSpeed() {
+  analogWrite(ENA, Speed);
+  analogWrite(ENB, Speed);
+}
+
+void forward() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+  setMotorSpeed();
+}
+
+void back() {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  setMotorSpeed();
+}
+
+void left() {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+  setMotorSpeed();
+}
+
+void right() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  setMotorSpeed();
+}
+
+void forwardleft() {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  analogWrite(ENA, Speed/2); // Reducir velocidad motor izquierdo
+  analogWrite(ENB, Speed);
+}
+
+void forwardright() {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  analogWrite(ENA, Speed);
+  analogWrite(ENB, Speed/2); // Reducir velocidad motor derecho
+}
+
+void backleft() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+  analogWrite(ENA, Speed/2);
+  analogWrite(ENB, Speed);
+}
+
+void backright() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+  analogWrite(ENA, Speed);
+  analogWrite(ENB, Speed/2);
+}
+
+void Stop() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+  analogWrite(ENA, 0);
+  analogWrite(ENB, 0);
+}
+
+void frontledon() { digitalWrite(LEDFA, HIGH);}
+void frontledoff() { digitalWrite(LEDFA, LOW);}
+void backledon() { digitalWrite(LEDB, HIGH); }
+void backledoff() { digitalWrite(LEDB, LOW); }
+void hornon() { digitalWrite(HORN, HIGH);
+                delay(400);
+                hornoff(); }
+void hornoff() { digitalWrite(HORN, LOW); }
+
+
+void prenderled() {digitalWrite(LEDUP,HIGH);  
+                   delay(100);
+                   digitalWrite(LEDUP,LOW);
+                   delay(100);}
+   </pre>
+  </section>
+
+  <section id="galeria" class="seccion">
+    <h2>Galería del Proyecto</h2>
+    <div class="galeria">
+      <img src="imagenes/plano.jpeg" alt="">  
+      <img src="imagenes/auto.jpeg" alt="Auto con Arduino">
+      <img src="imagenes/auto1.jpg" alt="Placa Arduino UNO">
+      <img src="imagenes/auto2.jpg" alt="Módulo Bluetooth HC-05">
+      <img src="imagenes/autoluces.jpg" alt="Driver L298N">
+      <img src="imagenes/autoluces2.jpg" alt="Motor-DC">
+      <img src="imagenes/esquema_auto.jpg" alt="Rueda">
+
+       <!-- 🔹 Video agregado -->
+    <video controls>
+      <source src="videoauto.mp4" type="video/mp4">
+      Tu navegador no soporta la reproducción de video.
+    </video>
+    </div>
+  </section>
+   <footer>
+    <p>Instituto Dr. Alfredo Loutaif — Tec. Sup. Análisis de Sistemas y Desarrollo de Software • Encuentro Provincial de Practicas y Residencias Educativas 2025</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tec. Sup. Análisis de Sistemas y Desarrollo de Software - IES Dr. Alfredo Loutaif</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="imagenes/images (1).jpeg" alt="Logo Instituto Dr. Alfredo Loutaif">
+      <div>
+        <h1>Tec. Sup. en Análisis de Sistemas y Desarrollo de Software</h1>
+        <p>Instituto Dr. Alfredo Loutaif — Orán, Salta</p>
+        <p>Encuentro Provincial de Practicas y Residencias Educativas</p>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="index.html">Sobre</a>
+      <a href="index.html">Propuesta Educativa</a>
+      <a href="proyectos.html">Proyectos</a>
+      <a href="plan_de_estudio.html">Plan</a>
+    </nav>
+  </header>
+  <section>
+    <h1>Proyecto Mini CNC con Arduino</h1>
+    <p>El Mini CNC con Arduino es una máquina de control numérico capaz de mover un lápiz o pluma sobre una superficie en los ejes X, Y y Z. Utiliza un Arduino Nano, dos motores paso a paso controlados por drivers L293D y un servomotor SG90 para levantar o bajar el lápiz. Este sistema puede interpretar comandos G-code a través de Arduino IDE.</p>
+    <img src="imagenes/cnc.jpg" alt="proyecto CNC" style="width:600px;display:block;margin:auto">
+  </section>
+    <section>
+        <h2>Diagrama de conexión</h2>
+        <img src="imagenes/diagrama_cnc.jpg" alt="Diagrama de conexión del Mini CNC"> <br>
+        <img src="imagenes/molde.jpg" alt="Molde de CNC">
+    </section>
+    <section>
+        <h2>Componentes utilizados</h2>
+        <ul>
+            <li>Arduino Nano</li>
+            <li>Drivers L293D</li>
+            <li>Motor paso a paso NEMA 17</li>
+            <li>Servomotor SG90</li>
+            <li>Fuente de alimentación 12V</li>
+            <li>Cables y protoboard</li>
+        </ul>       
+    </section>
+    <section>
+        <h2>Codigo del proyecto</h2>
+        <h3>Código para usar processing</h3>
+        <pre>
+            // Importamos librerías necesarias para manejo de eventos del teclado y comunicación serial
+import java.awt.event.KeyEvent;
+import javax.swing.JOptionPane;
+import processing.serial.*;
+Serial port = null; // Objeto para la comunicación serial
+// Puerto serial: si es null, se seleccionará al presionar 'p'
+String portname = null;
+// Descomenta según tu sistema operativo:
+//String portname = Serial.list()[0]; // Mac OS X
+//String portname = "/dev/ttyUSB0"; // Linux
+//String portname = "COM6"; // Windows
+
+boolean streaming = false; // Indicador si estamos mandando G-code de un archivo
+float speed = 0.001;       // Velocidad de movimiento por pasos (en pulgadas)
+String[] gcode;            // Almacenará las líneas del archivo G-code
+int i = 0;                 // Índice actual en el array de G-code
+
+/**
+ * Abre el puerto serial especificado.
+ */
+void openSerialPort()
+{
+  if (portname == null) return;
+  if (port != null) port.stop(); // Detener conexión previa
+  
+  // Iniciar comunicación serial a 9600 baudios
+  port = new Serial(this, portname, 9600);
+  
+  // Bufferizar hasta recibir un salto de línea
+  port.bufferUntil('\n');
+}
+/**
+ * Muestra un diálogo para seleccionar el puerto serial interactivo.
+ */
+void selectSerialPort()
+{
+  String result = (String) JOptionPane.showInputDialog(frame,
+    "Select the serial port that corresponds to your Arduino board.",
+    "Select serial port",
+    JOptionPane.QUESTION_MESSAGE,
+    null,
+    Serial.list(), // Lista todos los puertos disponibles
+    0);
+  if (result != null) {
+    portname = result;
+    openSerialPort(); // Abrir el puerto seleccionado
+  }
+}
+
+/**
+ * Configuración inicial del sketch
+ */
+void setup()
+{
+  size(500, 250); // Tamaño de la ventana
+  openSerialPort(); // Intentar abrir el puerto serial
+}
+/**
+ * Dibuja las instrucciones y estado en pantalla
+ */
+void draw()
+{
+  background(0); // Fondo negro
+  fill(255);     // Color blanco para texto
+
+  int y = 24, dy = 12;
+
+  // Mostrar instrucciones
+  text("INSTRUCTIONS", 12, y); y += dy;
+  text("p: select serial port", 12, y); y += dy;
+  text("1: set speed to 0.001 inches (1 mil) per jog", 12, y); y += dy;
+  text("2: set speed to 0.010 inches (10 mil) per jog", 12, y); y += dy;
+  text("3: set speed to 0.100 inches (100 mil) per jog", 12, y); y += dy;
+  text("arrow keys: jog in x-y plane", 12, y); y += dy;
+  text("page up & page down: jog in z axis", 12, y); y += dy;
+  text("$: display grbl settings", 12, y); y += dy;
+  text("h: go home", 12, y); y += dy;
+  text("0: zero machine (set home to current location)", 12, y); y += dy;
+  text("g: stream a g-code file", 12, y); y += dy;
+  text("x: stop streaming g-code", 12, y); y += dy;
+
+  // Mostrar estado actual abajo
+  y = height - dy;
+  text("current jog speed: " + speed + " inches per step", 12, y); y -= dy;
+  text("current serial port: " + portname, 12, y); y -= dy;
+}
+/**
+ * Manejador de eventos del teclado
+ */
+void keyPressed()
+{
+  // Cambiar velocidad de movimiento
+  if (key == '1') speed = 0.001;
+  if (key == '2') speed = 0.01;
+  if (key == '3') speed = 0.1;
+  
+  if (!streaming) { // Solo si no está enviando un archivo G-code
+    // Mandar comandos G-code para mover ejes X e Y
+    if (keyCode == LEFT) port.write("G91\nG20\nG00 X-" + speed + " Y0.000 Z0.000\n");
+    if (keyCode == RIGHT) port.write("G91\nG20\nG00 X" + speed + " Y0.000 Z0.000\n");
+    if (keyCode == UP) port.write("G91\nG20\nG00 X0.000 Y" + speed + " Z0.000\n");
+    if (keyCode == DOWN) port.write("G91\nG20\nG00 X0.000 Y-" + speed + " Z0.000\n");
+
+    // Mandar comandos para mover eje Z
+    if (keyCode == KeyEvent.VK_PAGE_UP) port.write("G91\nG20\nG00 X0.000 Y0.000 Z" + speed + "\n");
+    if (keyCode == KeyEvent.VK_PAGE_DOWN) port.write("G91\nG20\nG00 X0.000 Y0.000 Z-" + speed + "\n");
+
+    // Ir a casa (posición 0,0,0)
+    if (key == 'h') port.write("G90\nG20\nG00 X0.000 Y0.000 Z0.000\n");
+
+    // Comandos personalizados (configuración GRBL, etc.)
+    if (key == 'v') port.write("$0=75\n$1=74\n$2=75\n"); // Valores de prueba
+    if (key == 's') port.write("$3=10\n");                // Establecer velocidad spindle
+    if (key == 'e') port.write("$16=1\n");                // Habilitar EEPROM
+    if (key == 'd') port.write("$16=0\n");                // Deshabilitar EEPROM
+
+    // Reiniciar puerto serial
+    if (key == '0') openSerialPort();
+    
+    // Seleccionar puerto manualmente
+    if (key == 'p') selectSerialPort();
+
+    // Solicitar configuración GRBL ($$)
+    if (key == '$') port.write("$$\n");
+  }
+  
+  // Cargar y enviar archivo G-code
+  if (!streaming && key == 'g') {
+    gcode = null; i = 0;
+    File file = null;
+        </pre>
+    <h3>Código para el servo motor y motores paso a paso</h3>
+    <pre>
+        #include <Servo.h>       // Librería para controlar servos
+#include <Stepper.h>     // Librería para controlar motores paso a paso
+
+#define LINE_BUFFER_LENGTH 512  // Tamaño máximo del buffer para recibir líneas desde Serial
+
+// Alturas del servo para subir y bajar la pluma
+const int penZUp = 100;
+const int penZDown = 110;
+
+// Pin donde está conectado el servo de la pluma
+const int penServoPin = 6;
+
+// Número de pasos necesarios para una vuelta completa del motor paso a paso
+const int stepsPerRevolution = 48; 
+
+Servo penServo;  // Objeto Servo para controlar la pluma
+
+// Dos motores paso a paso: X y Y
+// Se configuran con los pines de conexión y número de pasos por revolución
+Stepper myStepperY(stepsPerRevolution, 2,3,4,5);   // Motor Y en pines 2,3,4,5
+Stepper myStepperX(stepsPerRevolution, 11,10,8,9); // Motor X en pines 11,10,8,9
+
+// Estructura para almacenar posición x, y, z
+struct point { 
+  float x; 
+  float y; 
+  float z; 
+};
+
+struct point actuatorPos; // Posición actual del actuador
+
+float StepInc = 1;         // Incremento de pasos (1 paso por movimiento)
+int StepDelay = 0;         // Retardo entre pasos del motor (en ms)
+int LineDelay = 50;        // Retardo después de mover la pluma
+int penDelay = 50;         // Retardo al subir o bajar la pluma
+
+// Relación de pasos por milímetro para convertir mm a pasos
+float StepsPerMillimeterX = 6.0;
+float StepsPerMillimeterY = 6.0;
+
+// Límites de trabajo en mm
+float Xmin = 0;
+float Xmax = 40;
+float Ymin = 0;
+float Ymax = 40;
+float Zmin = 0;
+float Zmax = 1;
+
+// Posiciones iniciales
+float Xpos = Xmin;
+float Ypos = Ymin;
+float Zpos = Zmax; 
+
+boolean verbose = false; // Modo detallado para depuración (true=activado)
+
+void setup() {
+  Serial.begin(9600);  // Iniciar comunicación serial a 9600 baudios
+  
+  penServo.attach(penServoPin); // Conectar servo al pin especificado
+  penServo.write(penZUp);       // Levantar la pluma inicialmente
+  delay(200);                   // Esperar a que se mueva
+
+  // Establecer velocidad de los motores paso a paso (pasos por segundo)
+  myStepperX.setSpeed(100);
+  myStepperY.setSpeed(100);  
+
+  // Mensaje de inicio
+  Serial.println("Mini CNC Plotter alive and kicking!");
+  
+  // Mostrar rangos de movimiento
+  Serial.print("X range is from "); 
+  Serial.print(Xmin); 
+  Serial.print(" to "); 
+  Serial.print(Xmax); 
+  Serial.println(" mm."); 
+  
+  Serial.print("Y range is from "); 
+  Serial.print(Ymin); 
+  Serial.print(" to "); 
+  Serial.print(Ymax); 
+  Serial.println(" mm."); 
+}
+
+void loop() 
+{
+  delay(200); // Pequeña pausa antes de esperar entrada
+
+  char line[LINE_BUFFER_LENGTH]; // Buffer para almacenar línea recibida
+  char c;
+  int lineIndex;
+  bool lineIsComment, lineSemiColon;
+
+  lineIndex = 0;
+  lineSemiColon = false;
+  lineIsComment = false;
+
+  while (1) {
+
+    while (Serial.available()>0) { // Mientras haya datos en el puerto serie
+      c = Serial.read();           // Leer caracter
+
+      if ((c == '\n') || (c == '\r')) { // Si es salto de línea o retorno de carro
+        if (lineIndex > 0) {            // Si hay algo en el buffer
+          line[lineIndex] = '\0';       // Finalizar cadena
+          
+          if (verbose) {                // Si modo detallado activo
+            Serial.print("Received : ");
+            Serial.println(line);
+          }
+          
+          processIncomingLine(line, lineIndex); // Procesar comando
+          lineIndex = 0;                        // Reiniciar índice
+        } 
+        else { 
+          // Línea vacía
+        }
+        
+        lineIsComment = false; // Resetear flags
+        lineSemiColon = false;
+        Serial.println("ok");  // Confirmar recepción
+      } 
+      else {
+        // Manejar comentarios y caracteres especiales
+        if ((lineIsComment) || (lineSemiColon)) {
+          if (c == ')') lineIsComment = false; // Fin de comentario
+        } 
+        else {
+          if (c <= ' ') {                      // Ignorar espacios y controles
+          } 
+          else if (c == '/') {                 // Borrado de bloque no soportado
+          } 
+          else if (c == '(') {                 // Inicio de comentario
+            lineIsComment = true;
+          } 
+          else if (c == ';') {                 // Comentario hasta fin de línea
+            lineSemiColon = true;
+          } 
+          else if (lineIndex >= LINE_BUFFER_LENGTH-1) { // Overflow del buffer
+            Serial.println("ERROR - lineBuffer overflow");
+            lineIsComment = false;
+            lineSemiColon = false;
+          } 
+          else if (c >= 'a' && c <= 'z') {     // Convertir a mayúsculas
+            line[lineIndex++] = c - 'a' + 'A';
+          } 
+          else {
+            line[lineIndex++] = c;             // Almacenar carácter normal
+          }
+        }
+      }
+    }
+  }
+}
+
+// Procesa una línea de comandos G-code o M-code
+void processIncomingLine(char* line, int charNB) {
+  int currentIndex = 0;
+  char buffer[64];                  // Buffer temporal para parámetros
+  struct point newPos;              // Nueva posición
+
+  newPos.x = 0.0;
+  newPos.y = 0.0;
+
+  while(currentIndex < charNB) {
+    switch(line[currentIndex++]) {
+      case 'U':                     // Comando personalizado para levantar pluma
+        penUp(); 
+        break;
+      case 'D':                     // Comando personalizado para bajar pluma
+        penDown(); 
+        break;
+      case 'G':                     // Comandos G-code
+        buffer[0] = line[currentIndex++]; // Solo soporta comandos de 2 dígitos
+        buffer[1] = '\0';
+
+        switch(atoi(buffer)) {
+          case 0:                   // G0 - Movimiento rápido
+          case 1:                   // G1 - Movimiento lineal
+            // Buscar coordenadas X e Y en la línea
+            char* indexX = strchr(line+currentIndex, 'X');
+            char* indexY = strchr(line+currentIndex, 'Y');
+
+            if (indexY <= 0) {
+              newPos.x = atof(indexX + 1);
+              newPos.y = actuatorPos.y;
+            } 
+            else if (indexX <= 0) {
+              newPos.y = atof(indexY + 1);
+              newPos.x = actuatorPos.x;
+            } 
+            else {
+              newPos.y = atof(indexY + 1);
+              indexY = '\0';
+              newPos.x = atof(indexX + 1);
+            }
+
+            drawLine(newPos.x, newPos.y); // Dibujar línea hasta nueva posición
+            actuatorPos.x = newPos.x;
+            actuatorPos.y = newPos.y;
+            break;
+        }
+        break;
+      case 'M':                     // Comandos M-code
+        buffer[0] = line[currentIndex++]; // Solo soporta comandos de 3 dígitos
+        buffer[1] = line[currentIndex++];
+        buffer[2] = line[currentIndex++];
+        buffer[3] = '\0';
+
+        switch(atoi(buffer)) {
+          case 300: // M300 - Control de la pluma
+            {
+              char* indexS = strchr(line+currentIndex, 'S'); // Buscar S
+              float Spos = atof(indexS + 1);
+
+              if (Spos == 30) penDown();  // S30 - bajar pluma
+              if (Spos == 50) penUp();    // S50 - levantar pluma
+              break;
+            }
+          case 114: // M114 - Reportar posición actual
+            Serial.print("Absolute position : X = ");
+            Serial.print(actuatorPos.x);
+            Serial.print("  -  Y = ");
+            Serial.println(actuatorPos.y);
+            break;
+          default:
+            Serial.print("Command not recognized : M");
+            Serial.println(buffer);
+        }
+    }
+  }
+}
+
+// Función para dibujar una línea entre dos puntos usando algoritmo de Bresenham
+void drawLine(float x1, float y1) {
+  // Limitar coordenadas dentro del rango permitido
+  if (x1 >= Xmax) x1 = Xmax;
+  if (x1 <= Xmin) x1 = Xmin;
+  if (y1 >= Ymax) y1 = Ymax;
+  if (y1 <= Ymin) y1 = Ymin;
+
+  // Convertir coordenadas mm a pasos
+  long x0 = (long)(Xpos * StepsPerMillimeterX);
+  long y0 = (long)(Ypos * StepsPerMillimeterY);
+  long x1_steps = (long)(x1 * StepsPerMillimeterX);
+  long y1_steps = (long)(y1 * StepsPerMillimeterY);
+
+  // Calcular diferencias
+  long dx = abs(x1_steps - x0);
+  long dy = abs(y1_steps - y0);
+  int sx = (x0 < x1_steps) ? StepInc : -StepInc;
+  int sy = (y0 < y1_steps) ? StepInc : -StepInc;
+
+  long over = 0;
+
+  // Algoritmo de Bresenham para mover ambos motores sincronizados
+  if (dx > dy) {
+    for (long i = 0; i < dx; ++i) {
+      myStepperX.step(sx);
+      over += dy;
+      if (over >= dx) {
+        over -= dx;
+        myStepperY.step(sy);
+      }
+      delay(StepDelay);
+    }
+  } else {
+    for (long i = 0; i < dy; ++i) {
+      myStepperY.step(sy);
+      over += dx;
+      if (over >= dy) {
+        over -= dy;
+        myStepperX.step(sx);
+      }
+      delay(StepDelay);
+    }    
+  }
+
+  delay(LineDelay); // Pausa al finalizar el movimiento
+
+  Xpos = x1; // Actualizar posición actual
+  Ypos = y1;
+}
+// Subir la pluma
+void penUp() { 
+  penServo.write(penZUp); 
+  delay(penDelay); 
+  Zpos = Zmax; 
+  if (verbose) Serial.println("Pen up!"); 
+}
+// Bajar la pluma
+void penDown() { 
+  penServo.write(penZDown); 
+  delay(penDelay); 
+  Zpos = Zmin; 
+  if (verbose) Serial.println("Pen down."); 
+}
+</pre>
+</section> 
+<footer>
+    <p>Instituto Dr. Alfredo Loutaif — Tec. Sup. Análisis de Sistemas y Desarrollo de Software • Encuentro Provincial de Practicas y Residencias Educativas 2025</p>
+  </footer>
+</body>
+</html>

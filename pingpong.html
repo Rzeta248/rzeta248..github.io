@@ -1,0 +1,315 @@
+ <!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tec. Sup. Análisis de Sistemas y Desarrollo de Software - IES Dr. Alfredo Loutaif</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="imagenes/images (1).jpeg" alt="Logo Instituto Dr. Alfredo Loutaif">
+      <div>
+        <h1>Tec. Sup. en Análisis de Sistemas y Desarrollo de Software</h1>
+        <p>Instituto Dr. Alfredo Loutaif — Orán, Salta</p>
+        <p>Encuentro Provincial de Practicas y Residencias Educativas</p>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="index.html">Sobre</a>
+      <a href="index.html">Propuesta Educativa</a>
+      <a href="proyectos.html">Proyectos</a>
+      <a href="plan_de_estudio.html">Plan</a>
+    </nav>
+  </header>
+  <section>
+    <h1>Juego de Ping Pong </h1>
+    <img src="imagenes/pinpong.jpg" alt="Juego de Ping Pong" style="width:600px;display:block;margin:auto">
+  </section>
+    <section>
+        <h2>Diagrama de conexión</h2>
+        <img src="imagenes/diagrama_pinpong.jpg" alt="Diagrama de conexión del Juego de Ping Pong" style="display:block; margin:auto">>
+    </section>
+    <section>
+        <h2>Código del proyecto</h2>
+        <pre>
+         bool laPelotaIraHaciaJugadorDos = true;
+bool sePermiteEntrada = true;
+
+const int jugadorUno = 12;
+const int metaJugadorUno = 13;
+const int botonJugadorUno = 3;
+
+const int jugadorDos = 5;
+const int metaJugadorDos = 4;
+const int botonJugadorDos = 2;
+
+int puntajeJugadorUno = 0;
+int puntajeJugadorDos = 0;
+
+const unsigned long milisegundosInicialesPorLED = 500;
+const unsigned long deltaMilisegundosInicialesPorLED = 50;
+unsigned long milisegundosPorLED = milisegundosInicialesPorLED;
+unsigned long deltaMilisegundosPorLED = deltaMilisegundosInicialesPorLED;
+unsigned long milisActuales = 0;
+unsigned long milisAnteriores = 0;
+
+int posicionActual = jugadorUno;
+int posicionAnterior = jugadorUno + 1;
+int deltaPosicion = 0;
+
+int estadoBotonJugadorUno = 0;
+int ultimoEstadoBotonJugadorUno = 0;
+int estadoBotonJugadorDos = 0;
+int ultimoEstadoBotonJugadorDos = 0;
+
+void setup() {
+  pinMode(4, 1);
+  pinMode(5, 1);
+  pinMode(6, 1);
+  pinMode(7, 1);
+  pinMode(8, 1);
+  pinMode(9, 1);
+  pinMode(10, 1);
+  pinMode(11, 1);
+  pinMode(12, 1);
+  pinMode(13, 1);
+
+  pinMode(2, 0);
+  pinMode(3, 0);
+}
+
+void loop()
+{
+  EscucharEntrada();
+  milisActuales = millis();
+  if (milisActuales - milisAnteriores >= milisegundosPorLED)
+  {
+    VerificarCondicionesDeMeta();
+    DeterminarSiguientePosicion();
+    MoverPelotaASiguientePosicion();
+
+    milisAnteriores = milisActuales;
+  }
+}
+
+void EscucharEntrada()
+{
+  estadoBotonJugadorUno = digitalRead(botonJugadorUno);
+  estadoBotonJugadorDos = digitalRead(botonJugadorDos);
+
+  if (estadoBotonJugadorUno != ultimoEstadoBotonJugadorUno && sePermiteEntrada)
+  {
+    if (estadoBotonJugadorUno == 1)
+    {
+      if (posicionActual == jugadorUno)
+      {
+        AlternarDireccionPelota();
+        AumentarVelocidad();
+      }
+      else
+      {
+        PuntuarParaJugador(2);
+      }
+    }
+    ultimoEstadoBotonJugadorUno = estadoBotonJugadorUno;
+  }
+  if (estadoBotonJugadorDos != ultimoEstadoBotonJugadorDos && sePermiteEntrada)
+  {
+    if (estadoBotonJugadorDos == 1)
+    {
+      if (posicionActual == jugadorDos)
+      {
+        AlternarDireccionPelota();
+        AumentarVelocidad();
+      }
+      else
+      {
+        PuntuarParaJugador(1);
+      }
+    }
+    ultimoEstadoBotonJugadorDos = estadoBotonJugadorDos;
+  }
+}
+
+void AlternarDireccionPelota()
+{
+  laPelotaIraHaciaJugadorDos = !laPelotaIraHaciaJugadorDos;
+  sePermiteEntrada = false;
+}
+
+void AumentarVelocidad()
+{
+  milisegundosPorLED -= deltaMilisegundosPorLED;
+  if (deltaMilisegundosPorLED > 5)
+  {
+    deltaMilisegundosPorLED -= 5;
+  }
+}
+
+void MoverPelotaASiguientePosicion()
+{
+  posicionAnterior = posicionActual;
+  digitalWrite(posicionAnterior, 0);
+  posicionActual = posicionActual + deltaPosicion;
+  digitalWrite(posicionActual, 1);
+  sePermiteEntrada = true;
+}
+
+void DeterminarSiguientePosicion()
+{
+  if (laPelotaIraHaciaJugadorDos)
+  {
+    deltaPosicion = -1;
+  }
+  else
+  {
+    deltaPosicion = 1;
+  }
+}
+
+void VerificarCondicionesDeMeta()
+{
+  if (posicionActual == metaJugadorDos)
+  {
+    PuntuarParaJugador(1);
+  }
+  else if (posicionActual == metaJugadorUno)
+  {
+    PuntuarParaJugador(2);
+  }
+}
+
+void PuntuarParaJugador(int jugadorQueAnoto)
+{
+  sePermiteEntrada = false;
+  DestellarTodosLosLEDs(1, 0);
+  if (jugadorQueAnoto == 1)
+  {
+    puntajeJugadorUno++;
+    MostrarPuntajes(1);
+  }
+  else if (jugadorQueAnoto == 2)
+  {
+    puntajeJugadorDos++;
+    MostrarPuntajes(2);
+  }
+  VerificarFinDeJuego();
+}
+
+void VerificarFinDeJuego()
+{
+  if (puntajeJugadorUno == 3)
+  {
+    CeremoniaFinDeJuegoPara(1);
+  }
+  if (puntajeJugadorDos == 3)
+  {
+    CeremoniaFinDeJuegoPara(2);
+  }
+}
+
+void MostrarPuntajes(int jugadorActualQueAnoto)
+{
+  if (jugadorActualQueAnoto == 1)
+  {
+    digitalWrite(jugadorUno, 1);
+    posicionActual = jugadorUno;
+    laPelotaIraHaciaJugadorDos = true;
+  }
+  else if (jugadorActualQueAnoto == 2)
+  {
+    digitalWrite(jugadorDos, 1);
+    posicionActual = jugadorDos;
+    laPelotaIraHaciaJugadorDos = false;
+  }
+
+  for (int i = 0; i < puntajeJugadorUno; i++)
+  {
+    digitalWrite((11 - i), 1);
+  }
+  for (int i = 0; i < puntajeJugadorDos; i++)
+  {
+    digitalWrite((6 + i), 1);
+  }
+
+  delay(3000);
+  ReiniciarValoresParaSiguienteRonda();
+}
+
+void ReiniciarValoresParaSiguienteRonda()
+{
+  DestellarTodosLosLEDs(1, 0);
+  milisegundosPorLED = milisegundosInicialesPorLED;
+  deltaMilisegundosPorLED = deltaMilisegundosInicialesPorLED;
+}
+
+void CeremoniaFinDeJuegoPara(int ganador)
+{
+  DestellarTodosLosLEDs(50, ganador);
+  ApagarTodosLosLEDsParaJugador(0);
+  puntajeJugadorUno = 0;
+  puntajeJugadorDos = 0;
+}
+
+void EncenderTodosLosLEDsParaJugador(int jugador)
+{
+  if (jugador != 1)
+  {
+    digitalWrite(4, 1);
+    digitalWrite(5, 1);
+    digitalWrite(6, 1);
+    digitalWrite(7, 1);
+    digitalWrite(8, 1);
+  }
+  if (jugador != 2)
+  {
+    digitalWrite(9, 1);
+    digitalWrite(10, 1);
+    digitalWrite(11, 1);
+    digitalWrite(12, 1);
+    digitalWrite(13, 1);
+  }
+}
+
+void ApagarTodosLosLEDsParaJugador(int jugador)
+{
+  if (jugador != 1)
+  {
+    digitalWrite(4, 0);
+    digitalWrite(5, 0);
+    digitalWrite(6, 0);
+    digitalWrite(7, 0);
+    digitalWrite(8, 0);
+  }
+  if (jugador != 2)
+  {
+    digitalWrite(9, 0);
+    digitalWrite(10, 0);
+    digitalWrite(11, 0);
+    digitalWrite(12, 0);
+    digitalWrite(13, 0);
+  }
+}
+
+void DestellarTodosLosLEDs(int contadorDestellos, int jugador)
+{
+  for (int i = 0; i < contadorDestellos; i++)
+  {
+    EncenderTodosLosLEDsParaJugador(jugador);
+    delay(35);
+    ApagarTodosLosLEDsParaJugador(jugador);
+    delay(35);
+  }
+}
+</pre>
+</section>
+<footer>
+    <p>Instituto Dr. Alfredo Loutaif — Tec. Sup. Análisis de Sistemas y Desarrollo de Software • Encuentro Provincial de Practicas y Residencias Educativas 2025</p>
+  </footer>
+</body>
+</html>

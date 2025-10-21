@@ -1,0 +1,200 @@
+  <!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tec. Sup. Análisis de Sistemas y Desarrollo de Software - IES Dr. Alfredo Loutaif</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    .tamaño{ width:300px;display:block;margin:auto}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="imagenes/images (1).jpeg" alt="Logo Instituto Dr. Alfredo Loutaif">
+      <div>
+        <h1>Tec. Sup. en Análisis de Sistemas y Desarrollo de Software</h1>
+        <p>Instituto Dr. Alfredo Loutaif — Orán, Salta</p>
+        <p>Encuentro Provincial de Practicas y Residencias Educativas</p>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="#sobre">Sobre</a>
+      <a href="#propuesta">Propuesta Educativa</a>
+      <a href="proyectos.html">Proyectos</a>
+      <a href="plan_de_estudio.html">Plan</a>
+    </nav>
+  </header>
+  <section>
+    <h2 style="text-align: center;">Mini juego: "No toques el cable"</h2>
+    <img  src="imagenes/no_toques_el_cable.jpg" alt="No toques el cable" style="width: 300px; display:block; margin:auto;">
+    <p><strong> Evita tocar el cable mientras intentas completar el juego.</strong></p>
+  </section>
+  <section>
+    <div class="codigo_minijuego">
+    <h2>Código del juego</h2>
+    <pre>
+        
+          //Minijuego: No toques el cable 
+
+#define a 2
+#define b 3
+#define c 4
+#define d 5
+#define e 6
+#define f 7
+#define g 8
+int tocar;
+int fallos;
+int pause;
+
+void setup() {
+  pinMode(12,INPUT);
+  pinMode(13,OUTPUT);
+  fallos=0;
+  pause=0;
+}
+
+void loop() {
+  tocar = digitalRead(12);
+  if(tocar == HIGH && pause==0){
+    digitalWrite(13,HIGH);
+    fallos++;
+    pause=1;
+  }
+  else{
+    digitalWrite(13,LOW);
+  }
+  //Contador de fallos
+  switch(fallos){
+    case 0:
+    digitalWrite(a, HIGH);
+    digitalWrite(b, HIGH);
+    digitalWrite(c, HIGH);
+    digitalWrite(d, HIGH);
+    digitalWrite(e, HIGH);
+    digitalWrite(f, HIGH);
+    digitalWrite(g, LOW);
+    break;
+    case 1:
+    digitalWrite(a, LOW);
+    digitalWrite(b, HIGH);
+    digitalWrite(c, HIGH);
+    digitalWrite(d, LOW);
+    digitalWrite(e, LOW);
+    digitalWrite(f, LOW);
+    digitalWrite(g, LOW);
+    break;
+    case 2:
+    digitalWrite(a, HIGH);
+    digitalWrite(b, HIGH);
+    digitalWrite(c, LOW);
+    digitalWrite(d, HIGH);
+    digitalWrite(e, HIGH);
+    digitalWrite(f, LOW);
+    digitalWrite(g, HIGH);
+    break;    
+    case 3:
+    digitalWrite(a, HIGH);
+    digitalWrite(b, HIGH);
+    digitalWrite(c, HIGH);
+    digitalWrite(d, HIGH);
+    digitalWrite(e, LOW);
+    digitalWrite(f, LOW);
+    digitalWrite(g, HIGH);
+    break;    
+    case 4:
+    digitalWrite(a, LOW);
+    digitalWrite(b, HIGH);
+    digitalWrite(c, HIGH);
+    digitalWrite(d, LOW);
+    digitalWrite(e, LOW);
+    digitalWrite(f, HIGH);
+    digitalWrite(g, HIGH);
+    break;    
+    case 5:
+    digitalWrite(a, HIGH);
+    digitalWrite(b, LOW);
+    digitalWrite(c, HIGH);
+    digitalWrite(d, HIGH);
+    digitalWrite(e, LOW);
+    digitalWrite(f, HIGH);
+    digitalWrite(g, HIGH);
+    break;    
+    case 6:
+    digitalWrite(a, HIGH);
+    digitalWrite(b, LOW);
+    digitalWrite(c, HIGH);
+    digitalWrite(d, HIGH);
+    digitalWrite(e, HIGH);
+    digitalWrite(f, HIGH);
+    digitalWrite(g, HIGH);
+    break;    
+    case 7:
+    digitalWrite(a, HIGH);
+    digitalWrite(b, HIGH);
+    digitalWrite(c, HIGH);
+    digitalWrite(d, LOW);
+    digitalWrite(e, LOW);
+    digitalWrite(f, LOW);
+    digitalWrite(g, LOW);
+    break;    
+    case 8:
+    digitalWrite(a, HIGH);
+    digitalWrite(b, HIGH);
+    digitalWrite(c, HIGH);
+    digitalWrite(d, HIGH);
+    digitalWrite(e, HIGH);
+    digitalWrite(f, HIGH);
+    digitalWrite(g, HIGH);
+    break;    
+    case 9:
+    digitalWrite(a, HIGH);
+    digitalWrite(b, HIGH);
+    digitalWrite(c, HIGH);
+    digitalWrite(d, HIGH);
+    digitalWrite(e, LOW);
+    digitalWrite(f, HIGH);
+    digitalWrite(g, HIGH);
+    break;   
+    default: 
+    digitalWrite(a, HIGH);
+    digitalWrite(b, LOW);
+    digitalWrite(c, LOW);
+    digitalWrite(d, HIGH);
+    digitalWrite(e, LOW);
+    digitalWrite(f, LOW);
+    digitalWrite(g, HIGH);
+  }
+  if(pause==1){
+    delay(100);
+    pause=0;
+    digitalWrite(13,LOW);
+    delay(400);
+  }
+}  
+    </pre>
+    </div>
+  </section>
+  <section>
+    <h2>Componentes</h2>
+    <ul>
+      <li>Arduino UNO</li>
+      <img src="imagenes/arduino2.png" alt="Arduino UNO" class="tamaño">
+      <li>Batería</li>
+      <img src="imagenes/bateria.png" alt="bateria" class="tamaño">
+      <li>Protoboard</li>
+      <img src="imagenes/protoboard.webp" alt="Protoboard" class="tamaño">
+      <li>Cables de conexión</li>
+      <img src="imagenes/jumper.jpg" alt="cables" class="tamaño">
+    </ul>
+  </section>
+   <footer>
+    <p>Instituto Dr. Alfredo Loutaif — Tec. Sup. Análisis de Sistemas y Desarrollo de Software • Encuentro Provincial de Practicas y Residencias Educativas 2025</p>
+  </footer>
+</body>
+</html>
